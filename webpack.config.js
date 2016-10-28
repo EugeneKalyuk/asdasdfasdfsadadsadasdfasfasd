@@ -1,13 +1,19 @@
 const webpack = require('webpack');
-
+var entryPath = __dirname + '\\application\\frontend';
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 module.exports = {
-    entry: "./home",
+    context: entryPath ,
+    entry: {
+        home: './home',
+        about:'./about'
+    },
 
     output: {
-        filename: "build.js",
-        library: 'home'
+        path: 'application/public',
+        filename: "[name].js",
+        library: '[name]',
+        publicPath: '/'
     },
     watch: NODE_ENV == 'development',
 
@@ -18,6 +24,7 @@ module.exports = {
     devtool: NODE_ENV == 'development' ? null : "source-map",
 
     plugins: [
+        new webpack.NoErrorsPlugin(),
         new webpack.DefinePlugin({
             NODE_ENV: JSON.stringify(NODE_ENV)
             }
@@ -27,12 +34,40 @@ module.exports = {
     module: {
         loaders: [{
             test: /\.js$/,
-            loader: 'babel',
-            query: {
-                presets: ['es2015']
-            }
-        }]
+            include: __dirname + '/application/frontend',
+            loader: 'babel?presets[]=es2015',
+        }],
+
+        noParse: [
+            /react\/react.js/,
+            /react-dom\/dist\/*.js/,
+        ]
+
+    },
+
+    resolve: {
+        modulesDirectories: ["node_modules"],
+        extensions: ["", ".js"]
+    },
+
+    resolveLoader: {
+        modulesDirectories: ["node_modules"],
+        moduleTemplates: ["*", "*-loader", "*-core" ],
+        extensions: ["", ".js"]
     }
 };
 
-console.log(NODE_ENV)
+if (NODE_ENV == 'production'){
+    module.exports.plugins.push(
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false,
+                drop_console: true,
+                unsafe: true
+            }
+        })
+    )
+}
+
+
+console.log(NODE_ENV);

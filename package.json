@@ -4,6 +4,8 @@
   "description": "",
   "main": "build.js",
   "dependencies": {
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
     "webpack": "^1.13.3"
   },
   "devDependencies": {},
